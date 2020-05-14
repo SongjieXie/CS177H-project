@@ -11,8 +11,10 @@ class MyPoint():
         self.screen = screen
 
         self.adom = adom
+        self.infection_start = 0
+        self.time = 0
         self.type_of = type_of
-        self.type_l = type_l
+        self.type_l = type_l # color list
 
         self.x = int(coord[0])
         self.y = int(coord[1])
@@ -25,6 +27,9 @@ class MyPoint():
     
     def disp(self):
         pygame.draw.circle(self.screen, self.type_l[self.type_of], (self.x, self.y), self.size, self.width)
+    
+    def load_time(self, time):
+        self.time = time
 
     def _ramble(self, shape, position, size, r=10):
         if shape == 'circle':
@@ -99,13 +104,16 @@ class MyPoint():
             self.x += self.step_x
             self.y += self.step_y
 
-    def evolve(self, scenes_num, ratio_l, infect_num_l, n, total=150, frame_num=200):
+    def evolve(self, scenes_num, ratio_l, infect_num_l, n, transition_time = 3,total=150, frame_num=200):
         r = (ratio_l[scenes_num]*infect_num_l[scenes_num]*n)/(total*frame_num)
         c = infection(r)
         if self.type_of == 2 and c >0:
-            # print('infection happen')
-            self.type_of = 0
-        
+            print('infection happen')
+            self.type_of = 1
+            self.infection_start = self.time
+        if self.type_of == 1:
+            if self.time -self.infection_start > 3:
+                self.type_of = 0
         
     def count_type(self):
         return self.type_of
