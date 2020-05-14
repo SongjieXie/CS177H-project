@@ -8,7 +8,7 @@ def infection(ratio):
         return 0
     
 def infection_num(x,person):
-    if person.count_type() <= 2:
+    if person.count_type() < 2:
         x += 1
     return x
     
