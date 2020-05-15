@@ -1,6 +1,6 @@
 import pygame
 import os, random, sys
-from build_up import MyPoint, camp, dining_hall, class_room, adom_room
+from build_up import MyPoint, camp, dining_hall, class_room, adom_room, drawName
 from util import infection_num
 import numpy as np
 
@@ -24,22 +24,13 @@ FPS = 50
 screen_main = pygame.display.set_mode((WIDTH, HEIGHT),  pygame.DOUBLEBUF)
 clock = pygame.time.Clock()
 pygame.display.set_caption('GAME')
+
 #=======================================================
 type_l = [RED, YELLOW, GREEN]
-ratio_l = [0.8, 0.5, 0.4, 0.1] 
-infect_num_l = [3, 3, 3, 3]
-#======================================================
-def drawName(building):
-    score_Surf = BASICFONT.render('{0}'.format(building.name()), True, GREY)
-    score_Rect = score_Surf.get_rect()
-    score_Rect.midtop = (building.main_position())
+para_1 = [0.8, 0.5, 0.4, 0.1] 
+para_2 = [3, 3, 3, 3]
 
-    screen_main.blit(score_Surf, score_Rect)
-
-#========================================================
-
-
-#  =============  generate person ==================
+# =============  generate person ==================
 person_l = []
 
 for i in range(150):
@@ -69,12 +60,11 @@ for i in range(2):
     )
 
 adom = adom_room(screen_main, (20,40), 40)
-# ============ build ====================================
 
 # ============ action ===================================
 #---------------- back adom ------------------------------------------
 l_adom_infection_num = [0]*50
-def back_adom(frame_num, day_num):
+def back_adom(frame_num, day_num, ratio_l, infect_num_l):
     for per in person_l:
         per.disp()
         per.load_time(day_num)
@@ -85,23 +75,22 @@ def back_adom(frame_num, day_num):
         for i in  range(len(person_l)):
             per = person_l[i]
             l_adom_infection_num[per.adom] = infection_num(l_adom_infection_num[per.adom], per)
-            # print('element:', l_adom_infection_num[per.adom])
         print(l_adom_infection_num)
 
     for per in person_l:
         per.back_adom(position_l)
-        # per.evolve(
-        #     0,
-        #     ratio_l,
-        #     infect_num_l,
-        #     l_adom_infection_num[per.adom],
-        #     transition_time = 3,
-        #     total=3
-        # )
+        per.evolve(
+            0,
+            ratio_l,
+            infect_num_l,
+            l_adom_infection_num[per.adom],
+            transition_time = 3,
+            total=3
+        )
 
 #----------------- eat --------------------------
 dining_infection_num = [0]
-def go_to_eat(frame_num, day_num):
+def go_to_eat(frame_num, day_num, ratio_l, infect_num_l):
     for per in person_l:
         per.disp()
         per.load_time(day_num)
@@ -116,14 +105,14 @@ def go_to_eat(frame_num, day_num):
     position = Dining_Hall.get_coord()
     for per in person_l:
         per.go_dining(position)
-        # per.evolve(
-        #     2,
-        #     ratio_l,
-        #     infect_num_l,
-        #     dining_infection_num[0],
-        #     transition_time = 3,
-        #     total= 150
-        # )
+        per.evolve(
+            2,
+            ratio_l,
+            infect_num_l,
+            dining_infection_num[0],
+            transition_time = 3,
+            total= 150
+        )
 
 #---------------- class --------------------
 index_list = np.random.randint(0,4, size=150)
@@ -133,7 +122,7 @@ for i in Class_room_l:
     l_class_posi.append(
         i.get_coord()
     )
-def go_to_class(frame_num, day_num):
+def go_to_class(frame_num, day_num, ratio_l, infect_num_l):
     for per in person_l:
         per.disp()
         per.load_time(day_num)
@@ -141,7 +130,6 @@ def go_to_class(frame_num, day_num):
     if frame_num == 202:
         for i in range(len(l_class_infection_num)):
             l_class_infection_num[i] = 0
-        print('Class Count!')
         for i in  range(len(person_l)):
             per = person_l[i]
             l_class_infection_num[index_list[i]] = infection_num(l_class_infection_num[index_list[i]], per)
@@ -151,18 +139,18 @@ def go_to_class(frame_num, day_num):
         per = person_l[i]
         posi = l_class_posi[index_list[i]]
         per.go_class(posi)
-        # per.evolve(
-        #     1,
-        #     ratio_l,
-        #     infect_num_l,
-        #     l_class_infection_num[index_list[i]],
-        #     transition_time = 3,
-        #     total= 40
-        # )
+        per.evolve(
+            1,
+            ratio_l,
+            infect_num_l,
+            l_class_infection_num[index_list[i]],
+            transition_time = 3,
+            total= 40
+        )
 
 #----------------- play -----------------------------------
 play_infection_num = [0]
-def go_to_play(frame_num, day_num):
+def go_to_play(frame_num, day_num, ratio_l, infect_num_l):
     for per in person_l:
         per.disp()
         per.load_time(day_num)
@@ -187,10 +175,25 @@ def go_to_play(frame_num, day_num):
             total= 150
         )
 
+# ================= main loop =================================
+def main_loop(frame_num, day_num, ratio_l, infect_num_l):
+    if frame_num >= 0 and frame_num <201:
+        back_adom(frame_num, day_num, ratio_l, infect_num_l)
+    elif frame_num >200 and frame_num < 401:
+        go_to_class(frame_num, day_num, ratio_l, infect_num_l)
+    elif frame_num > 400 and frame_num <601:
+        go_to_eat(frame_num, day_num, ratio_l, infect_num_l)
+    elif frame_num > 600 and frame_num <801:
+        go_to_play(frame_num, day_num, ratio_l, infect_num_l)
+    elif frame_num > 800 and frame_num <1001:
+        back_adom(frame_num, day_num, ratio_l, infect_num_l)
+    else:
+        print('The day {0} passed'.format(day_num))
+
 
 #============================================================
-day_num = 0
 frame_num = 0
+day_num =0
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -200,30 +203,22 @@ while True:
 
     #Draw buildings
     Dining_Hall.disp()
-    drawName(Dining_Hall)
+    drawName(Dining_Hall, screen_main)
     for c in Class_room_l:
         c.disp()
-        drawName(c)
+        drawName(c, screen_main)
     Camp.disp()
-    drawName(Camp)
+    drawName(Camp, screen_main)
     adom.disp()
-    drawName(adom)
+    drawName(adom, screen_main)
 
     # Activate actions
-    if frame_num > 0 and frame_num <201:
-        back_adom(frame_num, day_num)
-    elif frame_num >200 and frame_num < 401:
-        go_to_class(frame_num, day_num)
-    elif frame_num > 400 and frame_num <601:
-        go_to_eat(frame_num, day_num)
-    elif frame_num > 600 and frame_num <801:
-        go_to_play(frame_num, day_num)
-    elif frame_num > 800 and frame_num <1000:
-        back_adom(frame_num, day_num)
-    else:
+    main_loop(frame_num, day_num, para_1, para_2)
+
+    if frame_num > 1000:
         frame_num = 0
         day_num += 1
-
+        print(day_num)
 
     pygame.display.update()
     frame_num += 1

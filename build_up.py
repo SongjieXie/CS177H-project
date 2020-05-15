@@ -1,9 +1,27 @@
 import pygame
 import os, random, sys, math
 from util import infection
+pygame.font.init()
+
+# Basic Color
+BLACK = pygame.Color(0,0,0)#0,0,0
+WHITE = pygame.Color(255,255, 255)#255,255,255
+RED = pygame.Color(255, 0, 0)#255, 0, 0
+GREEN = pygame.Color(0,140, 0)#0, 255, 0
+BLUE = pygame.Color(0,0, 255)#0, 0, 255
+YELLOW = pygame.Color(255, 200, 0)
+GREY = pygame.Color(150,150, 150)
+
+BASICFONT = pygame.font.SysFont('SIMYOU.TTF', 28)
 
 sign = lambda x: 1 if x >0 else (-1 if x<0 else 0)
 
+def drawName(building, screen):
+    score_Surf = BASICFONT.render('{0}'.format(building.name()), True, GREY)
+    score_Rect = score_Surf.get_rect()
+    score_Rect.midtop = (building.main_position())
+
+    screen.blit(score_Surf, score_Rect)
 
 
 class MyPoint():
@@ -148,9 +166,6 @@ class camp():
             int(self.x+self.size1/2),
             int(self.y+self.size2/2)
         )
-
-
-
 
 class dining_hall():
     def __init__(self,screen, coord, size, color= (100, 150, 150), width=2):
