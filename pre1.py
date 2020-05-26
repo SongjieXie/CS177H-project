@@ -1,7 +1,9 @@
 import pygame
 import os, random, sys
 from build_up import MyPoint, camp, dining_hall, class_room, adom_room, drawName
-from util import infection_num
+from util import infection_num, count_total_SIR
+from mat_plot import plot_line
+from input_box import InputBox
 import numpy as np
 
 pygame.init()
@@ -18,7 +20,7 @@ GREY = pygame.Color(150,150, 150)
 BASICFONT = pygame.font.SysFont('SIMYOU.TTF', 28)
 
 # WIDTH, HEIGHT = 1000, 480
-WIDTH, HEIGHT = 1400, 700
+WIDTH, HEIGHT = 1300, 700
 FPS = 50
 
 screen_main = pygame.display.set_mode((WIDTH, HEIGHT),  pygame.DOUBLEBUF)
@@ -28,6 +30,7 @@ pygame.display.set_caption('GAME')
 #=======================================================
 type_l = [RED, YELLOW, GREEN]
 para_1 = [0.8, 0.5, 0.4, 0.1] 
+para_1_labels = ['Adom Ratio', 'Cateen Ratio', 'Classroom Ratio', 'Camp Ratio']
 para_2 = [3, 3, 3, 3]
 
 # =============  generate person ==================
@@ -60,6 +63,35 @@ for i in range(2):
     )
 
 adom = adom_room(screen_main, (20,40), 40)
+
+# ============== Input ===================================
+para_1_boxes_l = []
+para_2_boxes =None
+
+for i in range(len(para_1)):
+    box = InputBox(1100, 100 + 50*i, 70, 32, text=str(para_1[i]), label=para_1_labels[i])
+    para_1_boxes_l.append(box)
+
+para_2_boxes = InputBox(1100, 100 + 50*3+70, 70, 32, text=str(3), label='Infection num:')
+
+def Boxing():
+    for b in para_1_boxes_l:
+        b.update()
+    para_2_boxes.update()
+
+    for b in para_1_boxes_l:
+        b.draw(screen_main)
+    para_2_boxes.draw(screen_main)
+
+    p1 = []
+    p2 = []
+    for b in para_1_boxes_l:
+        p1.append(b.get_value())
+        p2.append(para_2_boxes.get_value())
+    
+    return p1, p2
+
+
 
 # ============ action ===================================
 #---------------- back adom ------------------------------------------
@@ -194,10 +226,14 @@ def main_loop(frame_num, day_num, ratio_l, infect_num_l):
 #============================================================
 frame_num = 0
 day_num =0
+Mycountor = count_total_SIR()
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+        for box in para_1_boxes_l:
+            box.handle_event(event)
+        para_2_boxes.handle_event(event)
 
     screen_main.fill(WHITE)
 
@@ -212,13 +248,24 @@ while True:
     adom.disp()
     drawName(adom, screen_main)
 
+    # Draw input 
+    p1, p2 = Boxing()
+
     # Activate actions
-    main_loop(frame_num, day_num, para_1, para_2)
+    main_loop(frame_num, day_num, p1, p2)
 
     if frame_num > 1000:
         frame_num = 0
         day_num += 1
         print(day_num)
+
+    #Plot counting chart
+    Mycountor.update(person_l)
+    data = Mycountor()
+    raw_data, size = plot_line(data)
+    surf = pygame.image.fromstring(raw_data, size, "RGB")
+    screen_main.blit(surf, (20,440))
+
 
     pygame.display.update()
     frame_num += 1
