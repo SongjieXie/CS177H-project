@@ -42,6 +42,8 @@ class MyPoint():
         self.size = size
         #self.color = type_l[type_of]
         self.width = width
+
+        self.hidden_day = random.randint(1,4)
     
     def disp(self):
         pygame.draw.circle(self.screen, self.type_l[self.type_of], (self.x, self.y), self.size, self.width)
@@ -135,6 +137,9 @@ class MyPoint():
         
     def count_type(self):
         return self.type_of
+
+    def change_type(self, type_to_change):
+        self.type_of = type_to_change
 
 
 # ============================== building =======================================

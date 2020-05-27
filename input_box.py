@@ -5,6 +5,9 @@ pg.init()
 screen = pg.display.set_mode((640, 480))
 COLOR_INACTIVE = pg.Color('lightskyblue3')
 COLOR_ACTIVE = pg.Color('dodgerblue2')
+
+RUN_COLOR = pg.Color(0,150,50)
+PAUSE_COLOR = pg.Color(150, 150, 150)
 BLACK = pg.Color(0,0,0)
 FONT = pg.font.Font(None, 26)
 
@@ -61,6 +64,38 @@ class InputBox:
 
     def get_value(self):
         return self.para
+
+
+class ButtonBox:
+
+    def __init__(self, x, y, w=70, h=70):
+        self.rect = pg.Rect(x, y, w, h)
+        self.color = PAUSE_COLOR
+        self.txt_surface = FONT.render("PAUSE", True, BLACK)
+        self.active = False
+
+
+    def handle_event(self, event):
+        if event.type == pg.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(event.pos):
+                # Toggle the active variable.
+                self.active = not self.active
+            self.color = RUN_COLOR if self.active else PAUSE_COLOR
+            text = "RUN" if self.active else "PAUSE"
+            self.txt_surface = FONT.render(text, True, BLACK)
+            
+
+
+    def draw(self, screen):
+        # Blit the rect.
+        pg.draw.rect(screen, self.color, self.rect, 0)
+        # Blit the text.
+        screen.blit(self.txt_surface, (self.rect.x+10, self.rect.y+10))
+
+
+    def get_flag(self):
+        return self.active
 
 def main():
     clock = pg.time.Clock()

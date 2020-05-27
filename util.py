@@ -14,6 +14,21 @@ def infection_num(x,person):
 
 
 
+def init_infect(person_l, num_I, num_C):
+    index_l = list(range(len(person_l)))
+    I_index_l = random.sample(index_l, num_I)
+    for i in I_index_l:
+        index_l.remove(i)
+    C_index_l = random.sample(index_l, num_C)
+
+    for j in I_index_l:
+        per = person_l[j]
+        per.change_type(0)
+    
+    for j in C_index_l:
+        per = person_l[j]
+        per.change_type(1)
+
 
 class count_total_SIR():
 
@@ -44,3 +59,4 @@ class count_total_SIR():
     
     def __call__(self):
         return self.count_list
+

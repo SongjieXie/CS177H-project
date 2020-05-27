@@ -1,9 +1,9 @@
 import pygame
 import os, random, sys
 from build_up import MyPoint, camp, dining_hall, class_room, adom_room, drawName
-from util import infection_num, count_total_SIR
+from util import infection_num, count_total_SIR, init_infect
 from mat_plot import plot_line
-from input_box import InputBox
+from input_box import InputBox, ButtonBox
 import numpy as np
 
 pygame.init()
@@ -40,7 +40,7 @@ for i in range(150):
     if i%30 == 0:
         coord = (random.randint(1,1000), random.randint(2, 480))
         person_l.append(
-            MyPoint( i//3,0, screen_main, coord, 2 , type_l)
+            MyPoint( i//3,2, screen_main, coord, 2 , type_l)
         )
     else:
         coord = (random.randint(1,1000), random.randint(2, 480))
@@ -67,6 +67,9 @@ adom = adom_room(screen_main, (20,40), 40)
 # ============== Input ===================================
 para_1_boxes_l = []
 para_2_boxes =None
+button_box = None
+
+button_box = ButtonBox(1100, 400)
 
 for i in range(len(para_1)):
     box = InputBox(1100, 100 + 50*i, 70, 32, text=str(para_1[i]), label=para_1_labels[i])
@@ -75,6 +78,7 @@ for i in range(len(para_1)):
 para_2_boxes = InputBox(1100, 100 + 50*3+70, 70, 32, text=str(3), label='Infection num:')
 
 def Boxing():
+
     for b in para_1_boxes_l:
         b.update()
     para_2_boxes.update()
@@ -82,6 +86,8 @@ def Boxing():
     for b in para_1_boxes_l:
         b.draw(screen_main)
     para_2_boxes.draw(screen_main)
+
+    button_box.draw(screen_main)
 
     p1 = []
     p2 = []
@@ -225,8 +231,10 @@ def main_loop(frame_num, day_num, ratio_l, infect_num_l):
 
 #============================================================
 frame_num = 0
+frame_num_countor = 0
 day_num =0
 Mycountor = count_total_SIR()
+Run_flag = False
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -234,6 +242,10 @@ while True:
         for box in para_1_boxes_l:
             box.handle_event(event)
         para_2_boxes.handle_event(event)
+        button_box.handle_event(event)
+
+        Run_flag = button_box.get_flag()
+
 
     screen_main.fill(WHITE)
 
@@ -252,7 +264,13 @@ while True:
     p1, p2 = Boxing()
 
     # Activate actions
-    main_loop(frame_num, day_num, p1, p2)
+    if Run_flag:
+        if frame_num == 1:
+            init_infect(person_l, 2, 3)
+        main_loop(frame_num, day_num, p1, p2)
+        Mycountor.update(person_l)
+        frame_num += 1
+        frame_num_countor += 1
 
     if frame_num > 1000:
         frame_num = 0
@@ -260,13 +278,14 @@ while True:
         print(day_num)
 
     #Plot counting chart
-    Mycountor.update(person_l)
+    
     data = Mycountor()
-    raw_data, size = plot_line(data)
+    raw_data, size = plot_line(frame_num_countor, data)
     surf = pygame.image.fromstring(raw_data, size, "RGB")
     screen_main.blit(surf, (20,440))
 
+    print(frame_num)
+
 
     pygame.display.update()
-    frame_num += 1
     time_passed = clock.tick(FPS)
