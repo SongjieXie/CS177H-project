@@ -56,6 +56,13 @@ class count_total_SIR():
         self.num_1 = 0
         self.num_2 = 0
 
+    def reset(self):
+        self.count_list = [[],[],[]]
+        self.num_0 = 0
+        self.num_1 = 0
+        self.num_2 = 0
+
+
     
     def __call__(self):
         return self.count_list

@@ -14,7 +14,7 @@ FONT = pg.font.Font(None, 26)
 
 class InputBox:
 
-    def __init__(self, x, y, w, h, text='3', label= 'Carteen R:'):
+    def __init__(self, x, y, w, h, text='3', label= 'Carteen R:', draw_label=True):
         self.rect = pg.Rect(x, y, w, h)
         self.color = COLOR_INACTIVE
         self.text = text
@@ -23,6 +23,7 @@ class InputBox:
 
         self.para = float(text)
         self.label_surface = FONT.render(label, True, BLACK)
+        self.draw_label = draw_label
 
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -57,7 +58,8 @@ class InputBox:
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Draw label
-        screen.blit(self.label_surface, (self.rect.x+5-150, self.rect.y+5))
+        if self.draw_label:
+            screen.blit(self.label_surface, (self.rect.x+5-150, self.rect.y+5))
         # Blit the rect.
         pg.draw.rect(screen, self.color, self.rect, 1)
 
@@ -68,10 +70,12 @@ class InputBox:
 
 class ButtonBox:
 
-    def __init__(self, x, y, w=70, h=70):
+    def __init__(self, x, y, w=70, h=70, str1="PAUSE", str2="RUN"):
+        self.str1 = str1
+        self.str2 = str2
         self.rect = pg.Rect(x, y, w, h)
         self.color = PAUSE_COLOR
-        self.txt_surface = FONT.render("PAUSE", True, BLACK)
+        self.txt_surface = FONT.render(self.str1, True, BLACK)
         self.active = False
 
 
@@ -81,8 +85,10 @@ class ButtonBox:
             if self.rect.collidepoint(event.pos):
                 # Toggle the active variable.
                 self.active = not self.active
+            else:
+                self.active = False
             self.color = RUN_COLOR if self.active else PAUSE_COLOR
-            text = "RUN" if self.active else "PAUSE"
+            text = self.str2 if self.active else self.str1
             self.txt_surface = FONT.render(text, True, BLACK)
             
 
@@ -97,31 +103,5 @@ class ButtonBox:
     def get_flag(self):
         return self.active
 
-def main():
-    clock = pg.time.Clock()
-    input_box1 = InputBox(100, 100, 140, 32)
-    input_box2 = InputBox(100, 300, 140, 32)
-    input_boxes = [input_box1, input_box2]
-    done = False
-
-    while not done:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                done = True
-            for box in input_boxes:
-                box.handle_event(event)
-
-        for box in input_boxes:
-            box.update()
-
-        screen.fill((30, 30, 30))
-        for box in input_boxes:
-            box.draw(screen)
-
-        pg.display.flip()
-        clock.tick(30)
 
 
-if __name__ == '__main__':
-    main()
-    pg.quit()

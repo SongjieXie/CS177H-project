@@ -76,9 +76,9 @@ class MyPoint():
         else:
             print('Unsurpported')
 
-    def back_adom(self, posi_l, s=10):
+    def back_adom(self, posi_l, s=18):
         position = posi_l[int(self.adom)]
-        step = random.randint(0,s)
+        step = random.randint(8,s)
         target_r = int(4*(position[2]/5))
         if position[0]-target_r<= self.x <= position[0]+target_r and position[1]-target_r<= self.y <= position[1]+target_r:
             self._ramble('rect', position, (position[2], position[2]), r=3)
@@ -128,7 +128,7 @@ class MyPoint():
         r = (ratio_l[scenes_num]*infect_num_l[scenes_num]*n)/(total*frame_num)
         c = infection(r)
         if self.type_of == 2 and c >0:
-            print('infection happen')
+            # print('infection happen')
             self.type_of = 1
             self.infection_start = self.time
         if self.type_of == 1:
