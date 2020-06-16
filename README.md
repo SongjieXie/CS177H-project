@@ -18,7 +18,7 @@ To start the simulator, just cd into root and execute:
 
 Then,  the interface of this simulator shows up like below:
 
-![3](/Users/xiesongjie/Desktop/CS177H/img/3.png)
+![3](./img/3.png)
 
 There are several parameters in the boxes on the right panel about the infection variables of each scene like dormitory, canteen, classroom and playground. Click the PAUSE button to start the simulation, and  click the RESET button to reset the simulation. 
 
