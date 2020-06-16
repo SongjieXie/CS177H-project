@@ -1,7 +1,7 @@
 import pygame
 import os, random, sys
 from build_up import MyPoint, camp, dining_hall, class_room, adom_room, drawName
-from util import infection_num, count_total_SIR, init_infect
+from util import infection_num, count_total_SIR, init_infect, recorder
 from mat_plot import plot_line, plot_hist
 from input_box import InputBox, ButtonBox
 import numpy as np
@@ -298,6 +298,7 @@ Run_flag = False
 data2 = [0,0,0,0]
 init_num = 0
 while True:
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -333,11 +334,14 @@ while True:
     # Activate actions
     if Run_flag:
         if frame_num_countor == 0:
+            reco = recorder()
+            reco.write_params(p1, p2, p3 )
             person_l = generate_persons()
             init_infect(person_l, int(p3[0]), int(p3[1]))
             init_num = sum([int(p3[0]), int(p3[1])])
         init_num = main_loop(frame_num, day_num, p1, p2, person_l, init_num, data2)
         Mycountor.update(person_l)
+        reco.write_frame(day_num, frame_num, Mycountor(), data2)
         frame_num += 1
         frame_num_countor += 1
 
@@ -348,6 +352,7 @@ while True:
 
     # Reset
     if Reset_flag:
+        reco.close_file()
         frame_num_countor = 0
         frame_num = 0
         Mycountor.reset()
@@ -365,6 +370,6 @@ while True:
     raw_data2, size2 = plot_hist(data2)
     surf = pygame.image.fromstring(raw_data2, size2, "RGB")
     screen_main.blit(surf, (420,440))
-
+    ########
     pygame.display.update()
     time_passed = clock.tick(FPS)

@@ -1,4 +1,6 @@
 import random
+import os
+from datetime import datetime
 
 def infection(ratio):
     s = random.uniform(0, 1)
@@ -67,3 +69,65 @@ class count_total_SIR():
     def __call__(self):
         return self.count_list
 
+
+class recorder():
+    def __init__(self, path_to_save=None, path='./doc'):
+        super().__init__()
+        if not path_to_save:
+            date = str(datetime.now()).split()[0]
+            dirl = os.listdir(path)
+            name = ''
+            for i in range(100):
+                name_tmp = date+'_num_'+str(i)+'.txt'
+                if name_tmp not in dirl:
+                    name = name_tmp
+                    break
+
+        self.name = os.path.join(path, name)
+        self.f = open(self.name, 'w')
+        self._initialize()
+
+        self.counting = 0
+
+    def _initialize(self):
+        head = 'Recording document:\nDate: '+str(datetime.now())+'\n'+'Params:\n'
+        self.f.write(head)
+    
+    def write_params(self, p1, p2, p3):
+        self.f.write(str(p1)+'\n')
+        self.f.write(str(p2)+'\n')
+        self.f.write(str(p3)+'\n')
+    
+    def write_frame(self,day_num, frame_num, SIR_l, posi):
+        self.counting += 1
+        string_1 = 'S:'+str(SIR_l[0][-1])+ ' ' + 'I:'+ str(SIR_l[1][-1])+' ' + 'N:' + str(SIR_l[2][-1]) + ' '
+        string_2 = 'Dorm:'+str(posi[0])+ ' ' +'Class:'+str(posi[1])+ ' ' + 'Canteen:' +str(posi[2])+ ' ' + 'Play:'+str(posi[3]) + ' '
+        spot = ''
+        if frame_num >= 0 and frame_num <201:
+            spot = 'Dorm'
+        elif frame_num >200 and frame_num < 401:
+            spot = 'Class'
+        elif frame_num > 400 and frame_num <601:
+            spot = 'Canteen'
+        elif frame_num > 600 and frame_num <801:
+            spot = 'Play'
+        elif frame_num > 800 and frame_num <1001:
+            spot =  'Dorm'
+        string = '['+str(self.counting)+'] '+ 'Day('+str(day_num)+') ' +'<'+ spot + '> '+ string_1+ string_2 +'\n'
+        self.f.write(string) 
+    
+    def close_file(self):
+        self.f.close()
+    
+
+
+
+    
+
+        
+        
+
+
+if __name__ == '__main__':
+    date = str(datetime.now()).split()[0]
+    print(date, type(date))
