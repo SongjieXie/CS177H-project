@@ -2,7 +2,7 @@
 
 The simple simulator of the spread of virus. More details are shown in the interim report and final report.([interim report](./interim_report/interim-report.pdf),)
 
-##Prerequisites:
+## Prerequisites:
 
 ### 1. Libraries
 
@@ -10,7 +10,7 @@ The simple simulator of the spread of virus. More details are shown in the inter
 * Matplotlib
 * Numpy
 
-##How to use:
+## How to use:
 
 To start the simulator, just cd into root and execute:
 
