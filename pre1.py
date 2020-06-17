@@ -30,7 +30,7 @@ pygame.display.set_caption('GAME')
 #=======================================================
 type_l = [RED, YELLOW, GREEN]
 para_1 = [0.8, 0.5, 0.4, 0.1] 
-para_1_labels = ['Dormitory:', 'Canteen:', 'Classroom:', 'Playground:']
+para_1_labels = ['Dormitory:', 'Classroom:', 'Canteen:', 'Playground:']
 para_2 = [2, 3, 3, 3]
 para_3_labels = ['Incfection:', 'Incuation:']
 para_3 = [2,3]
